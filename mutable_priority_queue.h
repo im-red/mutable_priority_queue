@@ -20,19 +20,19 @@ public:
         // the first place is not used
         m_vHandleHeap.push_back(-1);
     }
-    int size() { return m_vHandleHeap.size() - 1; }
+    size_t size() { return m_vHandleHeap.size() - 1; }
     bool empty() { return m_vHandleHeap.size() == 1; }
     handle_type push(const value_type &v)
     {
         handle_type handle;
 
         // if there is invalid element, take place its position
-        auto iter = m_setInvalid.begin();
-        if (iter != m_setInvalid.end())
+        if (!m_vInvalid.empty())
         {
+            auto iter = m_vInvalid.end() - 1;
             handle = *iter;
             m_vElements[handle] = v;
-            m_setInvalid.erase(iter);
+            m_vInvalid.erase(iter);
         }
         else
         {
@@ -53,10 +53,12 @@ public:
 
         value_type result = m_vElements[m_vHandleHeap[1]];
 
-        m_setInvalid.insert(m_vHandleHeap[1]);
+        m_vInvalid.push_back(m_vHandleHeap[1]);
 
-        std::swap(m_vHandleIndex[m_vHandleHeap[1]], m_vHandleIndex[m_vHandleHeap[m_vHandleHeap.size() - 1]]);
-        std::swap(m_vHandleHeap[1], m_vHandleHeap[m_vHandleHeap.size() - 1]);
+        std::swap(m_vHandleIndex[m_vHandleHeap[1]],
+                m_vHandleIndex[m_vHandleHeap[m_vHandleHeap.size() - 1]]);
+        std::swap(m_vHandleHeap[1],
+                m_vHandleHeap[m_vHandleHeap.size() - 1]);
 
         m_vHandleHeap.erase(m_vHandleHeap.end() - 1);
         lower(1);
@@ -67,6 +69,11 @@ public:
     {
         assert(!empty());
         return m_vElements[m_vHandleHeap[1]];
+    }
+    handle_type topHandle()
+    {
+        assert(!empty());
+        return m_vHandleHeap[1];
     }
     value_type value(handle_type const &handle)
     {
@@ -91,7 +98,9 @@ private:
         const size_t leftIndex = 2 * index;
         const size_t rightIndex = 2 * index + 1;
         size_t raiseIndex = -1;
-        if ((leftIndex < m_vHandleHeap.size()) && m_funcComp(m_vElements[m_vHandleHeap[leftIndex]], m_vElements[m_vHandleHeap[index]]))
+        if ((leftIndex < m_vHandleHeap.size())
+                && m_funcComp(m_vElements[m_vHandleHeap[leftIndex]],
+                              m_vElements[m_vHandleHeap[index]]))
         {
             raiseIndex = leftIndex;
         }
@@ -100,7 +109,9 @@ private:
             raiseIndex = index;
         }
 
-        if ((rightIndex < m_vHandleHeap.size()) && m_funcComp(m_vElements[m_vHandleHeap[rightIndex]], m_vElements[m_vHandleHeap[raiseIndex]]))
+        if ((rightIndex < m_vHandleHeap.size())
+                && m_funcComp(m_vElements[m_vHandleHeap[rightIndex]],
+                              m_vElements[m_vHandleHeap[raiseIndex]]))
         {
             raiseIndex = rightIndex;
         }
@@ -111,7 +122,8 @@ private:
         }
         else
         {
-            std::swap(m_vHandleIndex[m_vHandleHeap[raiseIndex]], m_vHandleIndex[m_vHandleHeap[index]]);
+            std::swap(m_vHandleIndex[m_vHandleHeap[raiseIndex]],
+                    m_vHandleIndex[m_vHandleHeap[index]]);
             std::swap(m_vHandleHeap[raiseIndex], m_vHandleHeap[index]);
             lower(raiseIndex);
             return true;
@@ -123,10 +135,13 @@ private:
         while (current != 1)
         {
             size_t parent = current / 2;
-            if (m_funcComp(m_vElements[m_vHandleHeap[current]], m_vElements[m_vHandleHeap[parent]]))
+            if (m_funcComp(m_vElements[m_vHandleHeap[current]],
+                           m_vElements[m_vHandleHeap[parent]]))
             {
-                std::swap(m_vHandleIndex[m_vHandleHeap[current]], m_vHandleIndex[m_vHandleHeap[parent]]);
-                std::swap(m_vHandleHeap[current], m_vHandleHeap[parent]);
+                std::swap(m_vHandleIndex[m_vHandleHeap[current]],
+                        m_vHandleIndex[m_vHandleHeap[parent]]);
+                std::swap(m_vHandleHeap[current],
+                          m_vHandleHeap[parent]);
                 current = parent;
             }
             else
@@ -140,7 +155,7 @@ private:
     std::vector<value_type> m_vElements;
     std::vector<handle_type> m_vHandleHeap;
     std::vector<size_t> m_vHandleIndex;
-    std::set<handle_type> m_setInvalid;
+    std::vector<handle_type> m_vInvalid;
 };
 
 #endif // MUTABLE_PRIORITY_QUEUE_H
