@@ -13,19 +13,19 @@ Compiler: gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.9)
 2. Green curve is the fitting curve using O(NLogN)
 3. Red curve is the fitting curve using O(N*N)
 
-push int:
-![push int](./benchmark/push_int.png)
-pop int:
-![pop int](./benchmark/pop_int.png)
-Node is:
+push int:  
+![push int](./benchmark/push_int.png)  
+pop int:  
+![pop int](./benchmark/pop_int.png)  
+Node is:  
 ```
 struct Node
 {
     int value;
     char ext[80];
 };
-```
-push Node:
-![push node](./benchmark/push_node.png)
-pop Node:
-![pop node](./benchmark/pop_node.png)
+```  
+push Node:  
+![push node](./benchmark/push_node.png)  
+pop Node:  
+![pop node](./benchmark/pop_node.png)  
